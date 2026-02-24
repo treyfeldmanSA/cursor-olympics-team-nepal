@@ -1,0 +1,121 @@
+<template>
+    <lightning-card title="Inbound Request Desk [NEPAL]" icon-name="standard:email">
+
+        <!-- HOME PAGE: Request List -->
+        <template if:false={isRecordPage}>
+            <template if:false={hasSelectedRecord}>
+                <div class="slds-p-around_medium">
+                    <template if:true={hasRequests}>
+                        <lightning-datatable
+                            key-field="Id"
+                            data={requests}
+                            columns={listColumns}
+                            max-row-selection="1"
+                            onrowselection={handleRowSelection}
+                            show-row-number-column
+                        ></lightning-datatable>
+                    </template>
+                    <template if:false={hasRequests}>
+                        <div class="slds-align_absolute-center slds-p-around_large">
+                            <p class="slds-text-body_regular slds-text-color_weak">No inbound requests found.</p>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- HOME PAGE: Selected Record Reply Form -->
+            <template if:true={hasSelectedRecord}>
+                <div class="slds-p-around_medium">
+                    <lightning-button
+                        label="Back to List"
+                        icon-name="utility:back"
+                        variant="neutral"
+                        onclick={handleBack}
+                        class="slds-m-bottom_small"
+                    ></lightning-button>
+
+                    <template if:true={showReplyForm}>
+                        <div class="slds-grid slds-wrap slds-gutters slds-m-top_small">
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_small">
+                                <lightning-input label="Subject" value={replySubject} read-only></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_small">
+                                <lightning-input label="From Email" value={fromEmail} read-only></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-bottom_small">
+                            <lightning-input label="Status" value={status} read-only></lightning-input>
+                        </div>
+                        <div class="slds-p-bottom_small">
+                            <lightning-textarea label="Original Body" value={body} read-only></lightning-textarea>
+                        </div>
+
+                        <div class="slds-box slds-theme_shade slds-p-around_small slds-m-top_small">
+                            <h3 class="slds-text-heading_small slds-p-bottom_small">Compose Reply</h3>
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-2 slds-p-bottom_small">
+                                    <lightning-input label="CC" value={ccAddresses} placeholder="Comma-separated emails" onchange={handleCcChange}></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-bottom_small">
+                                    <lightning-input label="BCC" value={bccAddresses} placeholder="Comma-separated emails" onchange={handleBccChange}></lightning-input>
+                                </div>
+                            </div>
+                            <div class="slds-p-bottom_small">
+                                <lightning-textarea label="Reply" value={replyBody} placeholder="Type your reply here..." onchange={handleReplyChange}></lightning-textarea>
+                            </div>
+                            <div class="slds-text-align_right">
+                                <lightning-button variant="brand" label={sendButtonLabel} disabled={isSendDisabled} onclick={handleSendReply} icon-name="utility:send"></lightning-button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </template>
+
+        <!-- RECORD PAGE: Single Record Reply Form -->
+        <template if:true={isRecordPage}>
+            <template if:true={record.data}>
+                <div class="slds-p-around_medium">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-2 slds-p-bottom_small">
+                            <lightning-input label="Subject" value={replySubject} read-only></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-p-bottom_small">
+                            <lightning-input label="From Email" value={fromEmail} read-only></lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-p-bottom_small">
+                        <lightning-input label="Status" value={status} read-only></lightning-input>
+                    </div>
+                    <div class="slds-p-bottom_small">
+                        <lightning-textarea label="Original Body" value={body} read-only></lightning-textarea>
+                    </div>
+
+                    <div class="slds-box slds-theme_shade slds-p-around_small slds-m-top_small">
+                        <h3 class="slds-text-heading_small slds-p-bottom_small">Compose Reply</h3>
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_small">
+                                <lightning-input label="CC" value={ccAddresses} placeholder="Comma-separated emails" onchange={handleCcChange}></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-bottom_small">
+                                <lightning-input label="BCC" value={bccAddresses} placeholder="Comma-separated emails" onchange={handleBccChange}></lightning-input>
+                            </div>
+                        </div>
+                        <div class="slds-p-bottom_small">
+                            <lightning-textarea label="Reply" value={replyBody} placeholder="Type your reply here..." onchange={handleReplyChange}></lightning-textarea>
+                        </div>
+                        <div class="slds-text-align_right">
+                            <lightning-button variant="brand" label={sendButtonLabel} disabled={isSendDisabled} onclick={handleSendReply} icon-name="utility:send"></lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <template if:true={record.error}>
+                <div class="slds-p-around_medium">
+                    <p class="slds-text-color_error">Error loading record data.</p>
+                </div>
+            </template>
+        </template>
+
+    </lightning-card>
+</template>
