@@ -3,221 +3,812 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Nepal 🇳🇵</title>
+    <title>Email Ops Arena - Team Nepal</title>
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --nepal-red: #DC143C;
+            --nepal-blue: #003893;
+            --usa-blue: #3C3B6E;
+            --india-orange: #FF9933;
+            --india-green: #138808;
+            --gold: #FFD700;
+            --bg: #0f0f1a;
+            --card: #1a1a2e;
+            --surface: #16213e;
+            --text: #e0e0e0;
+            --accent: #00d4ff;
+            --success: #00e676;
+            --error: #ff5252;
+        }
+
         body {
-            /* Centers the text vertically and horizontally */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #fafafa;
-            font-family: system-ui, -apple-system, sans-serif;
-            
-            /* Minimal Olympic rings color bar at the top */
-            border-top: 8px solid;
-            border-image: linear-gradient(to right, #0081C8 20%, #FCB131 20% 40%, #000000 40% 60%, #00A651 60% 80%, #EE334E 80%) 1;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        h1 {
-            font-size: 3.5rem;
-            color: #002868; /* Classic Team USA Navy */
-            margin: 0;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+        .top-bar {
+            height: 4px;
+            background: linear-gradient(to right, #0081C8 20%, #FCB131 20% 40%, #000 40% 60%, #00A651 60% 80%, #EE334E 80%);
         }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2.5rem;
+        /* ─── SCREENS ─── */
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: flex; flex-direction: column; }
+
+        /* ─── LOBBY ─── */
+        #lobby { align-items: center; padding: 40px 20px; }
+
+        .lobby-header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeDown 0.6s ease;
+        }
+        .lobby-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .lobby-header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+        .lobby-flag {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            display: block;
         }
 
-        .dice-roller {
-            background: #fff;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 24px rgba(0, 40, 104, 0.12);
-            border: 2px solid #e8e8e8;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .dice-roller h2 {
-            margin: 0;
-            font-size: 1.25rem;
-            color: #002868;
-            font-weight: 600;
-        }
-
-        .dice-container {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            justify-content: center;
-            min-height: 100px;
-        }
-
-        .dice {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(145deg, #fff 0%, #f0f0f0 100%);
-            border-radius: 12px;
-            border: 2px solid #002868;
+        .game-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            padding: 8px;
-            box-sizing: border-box;
-            align-items: center;
-            justify-items: center;
-            transition: transform 0.1s ease;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
+            max-width: 780px;
+            width: 100%;
+            animation: fadeUp 0.6s ease 0.2s both;
         }
 
-        .dice.rolling {
-            animation: shake 0.4s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-12deg) scale(1.05); }
-            50% { transform: rotate(12deg) scale(1.05); }
-            75% { transform: rotate(-8deg) scale(1.02); }
-        }
-
-        .dice .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #002868;
-        }
-
-        .dice .dot.hidden {
-            opacity: 0;
-        }
-
-        .dice-roller button {
-            background: #002868;
-            color: #fff;
-            border: none;
-            padding: 0.75rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 10px;
+        .game-card {
+            background: var(--card);
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 32px;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .game-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.15);
+        }
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+        .game-card.inbox-card::before { background: linear-gradient(90deg, var(--nepal-red), var(--india-orange), var(--usa-blue)); }
+        .game-card.reply-card::before { background: linear-gradient(90deg, var(--accent), var(--success)); }
+
+        .game-card .icon { font-size: 2.4rem; margin-bottom: 16px; }
+        .game-card h2 { font-size: 1.4rem; margin-bottom: 8px; color: #fff; }
+        .game-card p { color: #999; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
+        .game-card .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .inbox-card .badge { background: rgba(255, 215, 0, 0.15); color: var(--gold); }
+        .reply-card .badge { background: rgba(0, 212, 255, 0.15); color: var(--accent); }
+
+        .play-btn {
+            margin-top: 16px;
+            padding: 10px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .inbox-card .play-btn { background: var(--gold); color: #000; }
+        .reply-card .play-btn { background: var(--accent); color: #000; }
+        .play-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+        /* ─── SHARED GAME CHROME ─── */
+        .game-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: var(--surface);
+            border-bottom: 1px solid #2a2a4a;
+        }
+        .game-topbar .back-btn {
+            background: none;
+            border: 1px solid #444;
+            color: var(--text);
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .game-topbar .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .game-topbar .stats {
+            display: flex;
+            gap: 24px;
+            font-size: 0.95rem;
+        }
+        .game-topbar .stats span { color: #aaa; }
+        .game-topbar .stats strong { color: #fff; margin-left: 4px; }
+
+        /* ─── GAME 1: INBOX BLITZ ─── */
+        #inbox-game { position: relative; }
+        .inbox-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
         }
 
-        .dice-roller button:hover {
-            background: #001a3d;
-            transform: translateY(-1px);
+        .email-card-game {
+            background: var(--card);
+            border: 1px solid #2a2a4a;
+            border-radius: 14px;
+            padding: 28px;
+            max-width: 520px;
+            width: 100%;
+            animation: popIn 0.35s ease;
+            margin-bottom: 32px;
+        }
+        .email-card-game .field {
+            margin-bottom: 14px;
+        }
+        .email-card-game .field label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .email-card-game .field .value {
+            font-size: 0.95rem;
+            color: #ddd;
+            line-height: 1.4;
+        }
+        .email-card-game .field .value.subject {
+            font-weight: 600;
+            color: #fff;
+            font-size: 1.05rem;
+        }
+        .email-card-game .field .value.body-text {
+            background: #111;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            max-height: 120px;
+            overflow-y: auto;
         }
 
-        .dice-roller button:active {
-            transform: translateY(0);
+        .country-bins {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-
-        .dice-total {
+        .country-bin {
+            padding: 14px 32px;
+            border-radius: 10px;
             font-size: 1rem;
-            color: #555;
-            font-weight: 500;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            min-width: 140px;
+            text-align: center;
+        }
+        .country-bin.usa { background: rgba(60,59,110,0.3); color: #8888cc; border-color: #3C3B6E; }
+        .country-bin.india { background: rgba(255,153,51,0.15); color: #FF9933; border-color: #FF9933; }
+        .country-bin.nepal { background: rgba(220,20,60,0.15); color: #ff6b7a; border-color: var(--nepal-red); }
+        .country-bin:hover { transform: scale(1.06); filter: brightness(1.3); }
+        .country-bin.correct { animation: flashGreen 0.4s ease; }
+        .country-bin.wrong { animation: flashRed 0.4s ease; }
+
+        .inbox-countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 6rem;
+            font-weight: 800;
+            color: var(--accent);
+            animation: pulse 0.8s ease infinite;
+        }
+
+        /* ─── GAME 2: REPLY RUSH ─── */
+        #reply-game { position: relative; }
+        .reply-area {
+            flex: 1;
+            display: flex;
+            gap: 24px;
+            padding: 24px;
+            overflow: auto;
+        }
+
+        .original-email {
+            flex: 1;
+            background: var(--card);
+            border: 1px solid #2a2a4a;
+            border-radius: 14px;
+            padding: 24px;
+            max-width: 420px;
+        }
+        .original-email h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .reply-form {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-width: 520px;
+        }
+        .reply-form .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .reply-form label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #888;
+        }
+        .reply-form input, .reply-form textarea {
+            background: var(--card);
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .reply-form input:focus, .reply-form textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .reply-form input:disabled, .reply-form textarea:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .reply-form input.prefilled {
+            background: #111;
+            color: #aaa;
+        }
+        .reply-form textarea { resize: vertical; min-height: 100px; }
+
+        .send-btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            background: var(--success);
+            color: #000;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            align-self: flex-start;
+        }
+        .send-btn:hover:not(:disabled) { transform: scale(1.04); filter: brightness(1.1); }
+        .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .send-btn.sending { animation: pulse 0.6s ease infinite; }
+
+        /* ─── GAME OVER OVERLAY ─── */
+        .game-over {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            animation: fadeIn 0.3s ease;
+        }
+        .game-over.hidden { display: none; }
+        .game-over-card {
+            background: var(--card);
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 48px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            animation: popIn 0.4s ease;
+        }
+        .game-over-card h2 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .game-over-card .final-score {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gold), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 16px 0;
+        }
+        .game-over-card .breakdown {
+            color: #888;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+        .game-over-card button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 6px;
+            transition: all 0.2s;
+        }
+        .game-over-card button:hover { transform: scale(1.05); }
+        .btn-replay { background: var(--accent); color: #000; }
+        .btn-lobby { background: #333; color: #fff; }
+
+        /* ─── TOAST ─── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 200;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { background: var(--success); color: #000; }
+        .toast.error { background: var(--error); color: #fff; }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes flashGreen {
+            0% { box-shadow: 0 0 0 0 rgba(0,230,118,0.6); }
+            100% { box-shadow: 0 0 30px 10px rgba(0,230,118,0); }
+        }
+        @keyframes flashRed {
+            0% { box-shadow: 0 0 0 0 rgba(255,82,82,0.6); }
+            100% { box-shadow: 0 0 30px 10px rgba(255,82,82,0); }
+        }
+
+        @media (max-width: 700px) {
+            .reply-area { flex-direction: column; }
+            .original-email, .reply-form { max-width: 100%; }
+            .game-grid { grid-template-columns: 1fr; }
+            .lobby-header h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Go team Nepal! 🇳🇵</h1>
+<div class="top-bar"></div>
 
-        <section class="dice-roller" aria-label="Dice roller">
-            <h2>Dice roller</h2>
-            <div class="dice-container">
-                <div class="dice" id="dice1" aria-label="Dice 1">
-                    <span class="dot" data-pos="1"></span>
-                    <span class="dot" data-pos="2"></span>
-                    <span class="dot" data-pos="3"></span>
-                    <span class="dot" data-pos="4"></span>
-                    <span class="dot" data-pos="5"></span>
-                    <span class="dot" data-pos="6"></span>
-                    <span class="dot" data-pos="7"></span>
-                    <span class="dot" data-pos="8"></span>
-                    <span class="dot" data-pos="9"></span>
-                </div>
-                <div class="dice" id="dice2" aria-label="Dice 2">
-                    <span class="dot" data-pos="1"></span>
-                    <span class="dot" data-pos="2"></span>
-                    <span class="dot" data-pos="3"></span>
-                    <span class="dot" data-pos="4"></span>
-                    <span class="dot" data-pos="5"></span>
-                    <span class="dot" data-pos="6"></span>
-                    <span class="dot" data-pos="7"></span>
-                    <span class="dot" data-pos="8"></span>
-                    <span class="dot" data-pos="9"></span>
-                </div>
-            </div>
-            <p class="dice-total" id="diceTotal" aria-live="polite">Roll the dice!</p>
-            <button type="button" id="rollBtn">Roll dice</button>
-        </section>
+<!-- ════════════ LOBBY ════════════ -->
+<div id="lobby" class="screen active">
+    <div class="lobby-header">
+        <span class="lobby-flag">&#x1F1F3;&#x1F1F5;</span>
+        <h1>Email Ops Arena</h1>
+        <p>Team Nepal &mdash; 2 mini-games, 1 mission: master the inbox</p>
     </div>
+    <div class="game-grid">
+        <div class="game-card inbox-card" onclick="startInboxBlitz()">
+            <div class="icon">&#x1F4E8;</div>
+            <h2>Inbox Blitz</h2>
+            <p>Inbound emails flood in. Read each one and sort it to the correct country queue &mdash; USA, India, or Nepal. Fast and accurate wins.</p>
+            <span class="badge">Sort &amp; Route</span>
+            <br>
+            <button class="play-btn" type="button">Play</button>
+        </div>
+        <div class="game-card reply-card" onclick="startReplyRush()">
+            <div class="icon">&#x1F4E4;</div>
+            <h2>Reply Rush</h2>
+            <p>Compose proper replies under pressure. Prefill subjects, add CC/BCC, write the body, and hit send before time runs out.</p>
+            <span class="badge">Compose &amp; Send</span>
+            <br>
+            <button class="play-btn" type="button">Play</button>
+        </div>
+    </div>
+</div>
 
-    <script>
-        (function () {
-            // Which dots are visible for each face 1-6 (positions 1-9 in a 3x3 grid)
-            var faces = {
-                1: [5],
-                2: [1, 9],
-                3: [1, 5, 9],
-                4: [1, 3, 7, 9],
-                5: [1, 3, 5, 7, 9],
-                6: [1, 3, 4, 6, 7, 9]
-            };
+<!-- ════════════ GAME 1: INBOX BLITZ ════════════ -->
+<div id="inbox-game" class="screen">
+    <div class="game-topbar">
+        <button class="back-btn" onclick="goToLobby()">&larr; Lobby</button>
+        <div class="stats">
+            <span>Score: <strong id="ib-score">0</strong></span>
+            <span>Streak: <strong id="ib-streak">0</strong></span>
+            <span>Time: <strong id="ib-timer">45</strong>s</span>
+        </div>
+    </div>
+    <div class="inbox-area" id="inbox-area">
+        <!-- email cards rendered by JS -->
+    </div>
+    <div class="game-over hidden" id="ib-gameover">
+        <div class="game-over-card">
+            <h2>Inbox Blitz &mdash; Done!</h2>
+            <div class="final-score" id="ib-final-score">0</div>
+            <div class="breakdown" id="ib-breakdown"></div>
+            <button class="btn-replay" onclick="startInboxBlitz()">Play Again</button>
+            <button class="btn-lobby" onclick="goToLobby()">Lobby</button>
+        </div>
+    </div>
+</div>
 
-            function updateDice(el, value) {
-                var dots = el.querySelectorAll('.dot');
-                var visible = faces[value] || [];
-                dots.forEach(function (dot) {
-                    var pos = parseInt(dot.getAttribute('data-pos'), 10);
-                    dot.classList.toggle('hidden', visible.indexOf(pos) === -1);
-                });
-                el.setAttribute('aria-label', 'Showing ' + value);
+<!-- ════════════ GAME 2: REPLY RUSH ════════════ -->
+<div id="reply-game" class="screen">
+    <div class="game-topbar">
+        <button class="back-btn" onclick="goToLobby()">&larr; Lobby</button>
+        <div class="stats">
+            <span>Score: <strong id="rr-score">0</strong></span>
+            <span>Round: <strong id="rr-round">1</strong> / 5</span>
+            <span>Time: <strong id="rr-timer">30</strong>s</span>
+        </div>
+    </div>
+    <div class="reply-area" id="reply-area">
+        <div class="original-email" id="rr-original">
+            <h3>Inbound Email</h3>
+            <div class="field"><label>From</label><div class="value" id="rr-from"></div></div>
+            <div class="field"><label>Subject</label><div class="value subject" id="rr-subject"></div></div>
+            <div class="field"><label>Body</label><div class="value body-text" id="rr-body"></div></div>
+            <div class="field"><label>Message ID</label><div class="value" id="rr-msgid" style="font-family:monospace;font-size:0.8rem;color:#666;"></div></div>
+            <div class="field"><label>Status</label><div class="value" id="rr-status" style="color:var(--gold);">New</div></div>
+        </div>
+        <div class="reply-form" id="rr-form">
+            <div class="form-group">
+                <label>To (From Email)</label>
+                <input type="email" id="rr-to" readonly class="prefilled">
+            </div>
+            <div class="form-group">
+                <label>Subject</label>
+                <input type="text" id="rr-reply-subject" readonly class="prefilled">
+            </div>
+            <div class="form-group">
+                <label>CC</label>
+                <input type="email" id="rr-cc" placeholder="cc@example.com">
+            </div>
+            <div class="form-group">
+                <label>BCC</label>
+                <input type="email" id="rr-bcc" placeholder="bcc@example.com">
+            </div>
+            <div class="form-group">
+                <label>Reply Body</label>
+                <textarea id="rr-reply-body" placeholder="Type your reply here..."></textarea>
+            </div>
+            <button class="send-btn" id="rr-send-btn" onclick="submitReply()">&uarr; Send Reply</button>
+        </div>
+    </div>
+    <div class="game-over hidden" id="rr-gameover">
+        <div class="game-over-card">
+            <h2>Reply Rush &mdash; Done!</h2>
+            <div class="final-score" id="rr-final-score">0</div>
+            <div class="breakdown" id="rr-breakdown"></div>
+            <button class="btn-replay" onclick="startReplyRush()">Play Again</button>
+            <button class="btn-lobby" onclick="goToLobby()">Lobby</button>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════ TOAST ════════════ -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─────────────────────── DATA ─────────────────────── */
+const EMAIL_POOL = [
+    { country: "NEPAL", from: "hari.sharma@gov.np", subject: "Permit renewal for Everest base camp", body: "Dear Team,\n\nPlease renew our expedition permit for the spring 2026 season. The group ID is NP-2026-0451.\n\nThank you,\nHari" },
+    { country: "NEPAL", from: "sita.thapa@edu.np", subject: "Scholarship application status", body: "Namaste,\n\nI submitted my scholarship documents last week. Could you confirm receipt and share a timeline?\n\nBest,\nSita Thapa" },
+    { country: "NEPAL", from: "prakash.bista@trade.np", subject: "Export certificate request", body: "Hello,\n\nWe need an updated export certificate for our handicraft shipment to Germany. Order ref: HC-7829.\n\nRegards,\nPrakash" },
+    { country: "NEPAL", from: "anita.gc@health.np", subject: "Medical supply delivery delay", body: "Team,\n\nThe medical supply shipment to Pokhara Regional Hospital is delayed by 3 days. Please update the tracking.\n\nAnita G.C." },
+    { country: "USA", from: "john.smith@corp.us", subject: "Q3 revenue forecast update", body: "Hi Team,\n\nAttached is the updated Q3 revenue forecast. Please review before Thursday's board meeting.\n\nThanks,\nJohn" },
+    { country: "USA", from: "mary.jones@startup.io", subject: "Series B funding timeline", body: "Hello,\n\nCould you share the updated timeline for our Series B close? Investors are requesting weekly updates.\n\nBest,\nMary" },
+    { country: "USA", from: "alex.lee@tech.us", subject: "AWS infrastructure migration plan", body: "Team,\n\nPlease review the migration plan for moving our services from us-east-1 to us-west-2. Target date: March 15.\n\nAlex" },
+    { country: "USA", from: "sarah.chen@legal.us", subject: "Contract amendment for Project Atlas", body: "Hi,\n\nThe legal team has prepared the amended contract for Project Atlas. Signatures needed by EOD Friday.\n\nSarah Chen" },
+    { country: "INDIA", from: "raj.patel@infosys.in", subject: "Sprint 14 delivery milestone", body: "Dear Manager,\n\nSprint 14 deliverables are ready for UAT. The deployment window is Saturday 2 AM IST.\n\nRegards,\nRaj Patel" },
+    { country: "INDIA", from: "priya.nair@gov.in", subject: "GST registration clarification", body: "Sir/Madam,\n\nWe need clarification on the GST registration for our new branch in Bangalore. Registration ID: GSTIN-KA-2026.\n\nPriya Nair" },
+    { country: "INDIA", from: "vikram.singh@tata.in", subject: "Steel shipment quality report", body: "Hello,\n\nPlease find the quality inspection report for Lot #IN-8834. Two samples require re-testing.\n\nVikram Singh" },
+    { country: "INDIA", from: "deepa.iyer@wipro.in", subject: "Client onboarding checklist", body: "Hi Team,\n\nThe onboarding checklist for the new UK client is pending approval. Please review and sign off by Monday.\n\nDeepa Iyer" },
+    { country: "NEPAL", from: "bijay.rai@tourism.np", subject: "Trekking guide license renewal", body: "Hello,\n\nMy trekking guide license expires next month. Please advise on the renewal process and fees.\n\nBijay Rai" },
+    { country: "USA", from: "emma.wright@finance.us", subject: "401k plan amendment notice", body: "Dear Employees,\n\nPlease review the updated 401k plan terms effective April 1. New matching formula is 6%.\n\nEmma Wright, HR" },
+    { country: "INDIA", from: "arjun.mehta@ola.in", subject: "Driver partner payment dispute", body: "Hello Support,\n\nPayment for rides completed on Feb 14-16 has not been credited. Partner ID: OLA-DRV-55123.\n\nArjun Mehta" },
+];
+
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+}
+
+/* ─────────────────────── NAVIGATION ─────────────────────── */
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function goToLobby() {
+    clearInterval(window._gameTimer);
+    showScreen('lobby');
+}
+
+/* ─────────────────────── TOAST ─────────────────────── */
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ══════════════════════════════════════════════════════
+   GAME 1 — INBOX BLITZ
+   ══════════════════════════════════════════════════════ */
+let ibState = {};
+
+function startInboxBlitz() {
+    ibState = {
+        emails: shuffle(EMAIL_POOL),
+        idx: 0,
+        score: 0,
+        streak: 0,
+        bestStreak: 0,
+        correct: 0,
+        wrong: 0,
+        timeLeft: 45
+    };
+    document.getElementById('ib-gameover').classList.add('hidden');
+    showScreen('inbox-game');
+    updateIbStats();
+    renderInboxEmail();
+
+    clearInterval(window._gameTimer);
+    window._gameTimer = setInterval(() => {
+        ibState.timeLeft--;
+        document.getElementById('ib-timer').textContent = ibState.timeLeft;
+        if (ibState.timeLeft <= 0) { clearInterval(window._gameTimer); endInboxBlitz(); }
+    }, 1000);
+}
+
+function updateIbStats() {
+    document.getElementById('ib-score').textContent = ibState.score;
+    document.getElementById('ib-streak').textContent = ibState.streak;
+    document.getElementById('ib-timer').textContent = ibState.timeLeft;
+}
+
+function renderInboxEmail() {
+    const area = document.getElementById('inbox-area');
+    if (ibState.idx >= ibState.emails.length) {
+        ibState.emails = shuffle(EMAIL_POOL);
+        ibState.idx = 0;
+    }
+    const e = ibState.emails[ibState.idx];
+    area.innerHTML = `
+        <div class="email-card-game">
+            <div class="field"><label>From</label><div class="value">${e.from}</div></div>
+            <div class="field"><label>Subject</label><div class="value subject">${e.subject}</div></div>
+            <div class="field"><label>Body</label><div class="value body-text">${e.body.replace(/\n/g, '<br>')}</div></div>
+        </div>
+        <div class="country-bins">
+            <button class="country-bin usa" onclick="pickCountry('USA', this)">&#x1F1FA;&#x1F1F8; USA</button>
+            <button class="country-bin india" onclick="pickCountry('INDIA', this)">&#x1F1EE;&#x1F1F3; INDIA</button>
+            <button class="country-bin nepal" onclick="pickCountry('NEPAL', this)">&#x1F1F3;&#x1F1F5; NEPAL</button>
+        </div>`;
+}
+
+function pickCountry(choice, btn) {
+    const e = ibState.emails[ibState.idx];
+    if (choice === e.country) {
+        ibState.correct++;
+        ibState.streak++;
+        if (ibState.streak > ibState.bestStreak) ibState.bestStreak = ibState.streak;
+        const streakBonus = Math.floor(ibState.streak / 3) * 5;
+        ibState.score += 10 + streakBonus;
+        btn.classList.add('correct');
+        showToast('+' + (10 + streakBonus) + (streakBonus ? ' (streak!)' : ''), 'success');
+    } else {
+        ibState.wrong++;
+        ibState.streak = 0;
+        ibState.score = Math.max(0, ibState.score - 5);
+        btn.classList.add('wrong');
+        showToast('Wrong! It was ' + e.country, 'error');
+    }
+    ibState.idx++;
+    updateIbStats();
+    setTimeout(renderInboxEmail, 350);
+}
+
+function endInboxBlitz() {
+    const ov = document.getElementById('ib-gameover');
+    ov.classList.remove('hidden');
+    document.getElementById('ib-final-score').textContent = ibState.score;
+    document.getElementById('ib-breakdown').innerHTML =
+        `Correct: ${ibState.correct} &nbsp;|&nbsp; Wrong: ${ibState.wrong}<br>` +
+        `Best Streak: ${ibState.bestStreak}<br>` +
+        `Accuracy: ${ibState.correct + ibState.wrong > 0 ? Math.round(ibState.correct / (ibState.correct + ibState.wrong) * 100) : 0}%`;
+}
+
+/* ══════════════════════════════════════════════════════
+   GAME 2 — REPLY RUSH
+   ══════════════════════════════════════════════════════ */
+let rrState = {};
+
+const REPLY_EMAILS = [
+    { from: "hari.sharma@gov.np", subject: "Permit renewal for Everest base camp", body: "Dear Team,\n\nPlease renew our expedition permit for the spring 2026 season.\n\nThank you,\nHari", msgId: "MSG-NP-0001" },
+    { from: "raj.patel@infosys.in", subject: "Sprint 14 delivery milestone", body: "Dear Manager,\n\nSprint 14 deliverables are ready for UAT.\n\nRegards,\nRaj", msgId: "MSG-IN-0002" },
+    { from: "john.smith@corp.us", subject: "Q3 revenue forecast update", body: "Hi Team,\n\nPlease review the updated Q3 revenue forecast before the board meeting.\n\nThanks,\nJohn", msgId: "MSG-US-0003" },
+    { from: "sita.thapa@edu.np", subject: "Scholarship application status", body: "Namaste,\n\nI submitted my scholarship documents last week. Could you confirm receipt?\n\nBest,\nSita", msgId: "MSG-NP-0004" },
+    { from: "priya.nair@gov.in", subject: "GST registration clarification", body: "Sir/Madam,\n\nWe need clarification on the GST registration for our new branch.\n\nPriya Nair", msgId: "MSG-IN-0005" },
+    { from: "alex.lee@tech.us", subject: "AWS infrastructure migration plan", body: "Team,\n\nPlease review the migration plan for moving our services. Target date: March 15.\n\nAlex", msgId: "MSG-US-0006" },
+    { from: "prakash.bista@trade.np", subject: "Export certificate request", body: "Hello,\n\nWe need an updated export certificate for our handicraft shipment.\n\nRegards,\nPrakash", msgId: "MSG-NP-0007" },
+];
+
+function startReplyRush() {
+    rrState = {
+        emails: shuffle(REPLY_EMAILS).slice(0, 5),
+        idx: 0,
+        score: 0,
+        totalTime: 0,
+        roundTimes: [],
+        roundScores: [],
+        timeLeft: 30,
+        sending: false
+    };
+    document.getElementById('rr-gameover').classList.add('hidden');
+    showScreen('reply-game');
+    loadReplyRound();
+
+    clearInterval(window._gameTimer);
+    window._gameTimer = setInterval(() => {
+        rrState.timeLeft--;
+        document.getElementById('rr-timer').textContent = rrState.timeLeft;
+        if (rrState.timeLeft <= 0) { clearInterval(window._gameTimer); skipOrEndReply(); }
+    }, 1000);
+}
+
+function loadReplyRound() {
+    const e = rrState.emails[rrState.idx];
+    document.getElementById('rr-from').textContent = e.from;
+    document.getElementById('rr-subject').textContent = e.subject;
+    document.getElementById('rr-body').innerHTML = e.body.replace(/\n/g, '<br>');
+    document.getElementById('rr-msgid').textContent = e.msgId;
+    document.getElementById('rr-status').textContent = 'New';
+    document.getElementById('rr-status').style.color = 'var(--gold)';
+
+    document.getElementById('rr-to').value = e.from;
+    document.getElementById('rr-reply-subject').value = '[NEPAL] Re: ' + e.subject;
+    document.getElementById('rr-cc').value = '';
+    document.getElementById('rr-bcc').value = '';
+    document.getElementById('rr-reply-body').value = '';
+    document.getElementById('rr-reply-body').focus();
+
+    document.getElementById('rr-round').textContent = rrState.idx + 1;
+    document.getElementById('rr-score').textContent = rrState.score;
+    document.getElementById('rr-send-btn').disabled = false;
+    document.getElementById('rr-send-btn').classList.remove('sending');
+    rrState.sending = false;
+    rrState.roundStart = Date.now();
+}
+
+function submitReply() {
+    if (rrState.sending) return;
+    const body = document.getElementById('rr-reply-body').value.trim();
+    if (!body) { showToast('Reply body cannot be empty!', 'error'); return; }
+
+    rrState.sending = true;
+    const btn = document.getElementById('rr-send-btn');
+    btn.disabled = true;
+    btn.classList.add('sending');
+    btn.textContent = 'Sending...';
+
+    const elapsed = (Date.now() - rrState.roundStart) / 1000;
+    rrState.roundTimes.push(elapsed);
+
+    setTimeout(() => {
+        let points = 0;
+        const timeBonus = Math.max(0, Math.round((30 - elapsed) * 2));
+        points += 20 + timeBonus;
+
+        const cc = document.getElementById('rr-cc').value.trim();
+        const bcc = document.getElementById('rr-bcc').value.trim();
+        if (cc) points += 5;
+        if (bcc) points += 5;
+        if (body.length > 20) points += 10;
+
+        rrState.score += points;
+        rrState.roundScores.push(points);
+
+        document.getElementById('rr-status').textContent = 'Replied';
+        document.getElementById('rr-status').style.color = 'var(--success)';
+        showToast('Sent! +' + points + ' pts', 'success');
+
+        btn.textContent = '↑ Send Reply';
+        rrState.idx++;
+
+        setTimeout(() => {
+            if (rrState.idx >= rrState.emails.length) {
+                clearInterval(window._gameTimer);
+                endReplyRush();
+            } else {
+                rrState.timeLeft = 30;
+                document.getElementById('rr-timer').textContent = '30';
+                loadReplyRound();
             }
+        }, 800);
+    }, 600);
+}
 
-            function rollDice() {
-                var dice1 = document.getElementById('dice1');
-                var dice2 = document.getElementById('dice2');
-                var totalEl = document.getElementById('diceTotal');
-                var rollBtn = document.getElementById('rollBtn');
+function skipOrEndReply() {
+    rrState.roundTimes.push(30);
+    rrState.roundScores.push(0);
+    showToast('Time\'s up for this round!', 'error');
+    rrState.idx++;
+    if (rrState.idx >= rrState.emails.length) {
+        endReplyRush();
+    } else {
+        rrState.timeLeft = 30;
+        document.getElementById('rr-timer').textContent = '30';
+        clearInterval(window._gameTimer);
+        window._gameTimer = setInterval(() => {
+            rrState.timeLeft--;
+            document.getElementById('rr-timer').textContent = rrState.timeLeft;
+            if (rrState.timeLeft <= 0) { clearInterval(window._gameTimer); skipOrEndReply(); }
+        }, 1000);
+        loadReplyRound();
+    }
+}
 
-                rollBtn.disabled = true;
-                dice1.classList.add('rolling');
-                dice2.classList.add('rolling');
-
-                var v1 = Math.floor(Math.random() * 6) + 1;
-                var v2 = Math.floor(Math.random() * 6) + 1;
-
-                updateDice(dice1, v1);
-                updateDice(dice2, v2);
-                totalEl.textContent = 'Total: ' + (v1 + v2);
-
-                setTimeout(function () {
-                    dice1.classList.remove('rolling');
-                    dice2.classList.remove('rolling');
-                    rollBtn.disabled = false;
-                }, 400);
-            }
-
-            document.getElementById('rollBtn').addEventListener('click', rollDice);
-
-            // Initial display
-            updateDice(document.getElementById('dice1'), 1);
-            updateDice(document.getElementById('dice2'), 1);
-            document.getElementById('diceTotal').textContent = 'Roll the dice!';
-        })();
-    </script>
+function endReplyRush() {
+    const ov = document.getElementById('rr-gameover');
+    ov.classList.remove('hidden');
+    document.getElementById('rr-final-score').textContent = rrState.score;
+    const avgTime = rrState.roundTimes.length > 0
+        ? (rrState.roundTimes.reduce((a, b) => a + b, 0) / rrState.roundTimes.length).toFixed(1)
+        : '0';
+    const replied = rrState.roundScores.filter(s => s > 0).length;
+    document.getElementById('rr-breakdown').innerHTML =
+        `Replies Sent: ${replied} / ${rrState.emails.length}<br>` +
+        `Avg Reply Time: ${avgTime}s<br>` +
+        `Subject Tag: [NEPAL] Re: ...`;
+}
+</script>
 
 </body>
 </html>
